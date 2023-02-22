@@ -24,7 +24,10 @@
         <div id="red_circle" class="red"></div>
     </div>
     <div class="card text-block">
-        <h5 class="card-header">Random revision system</h5>
+        <h5 class="card-header">Random revision system <h4 id="card_title"
+                style="background-color: yellowgreen;color: black; text-align: center;">
+            </h4>
+        </h5>
         <div class="card-body">
             <h5 class="card-title">Push the button to check revision</h5>
             <br>
@@ -45,10 +48,26 @@
         var card = document.getElementById("card_revision");
         var text = document.getElementById("id_txt_revision");
         var btn = document.getElementById("btnGenerate");
+        var cardTitle = document.getElementById("card_title");
+        let isBucle = false;
+        var arr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        var currentPosition = 0;
+        var random = -1;
+
+        //Events
+        document.addEventListener("keyup", function (event) {
+            if (event.key === 'Enter') {
+                cardTitle.innerHTML = "[AUTOMATIC MODE]";
+                isBucle = true;
+            } else if (event.key === 'Escape') {
+                cardTitle.innerHTML = ""
+                isBucle = false;
+            }
+        });
 
         function buttonPushed() {
             btn.disabled = true;
-            if (getRandomInt(2) === 0) {//Green
+            if (checkPeople()) {//Green
                 text.innerHTML = "Pass"
                 green.style.opacity = 1;
                 card.style.backgroundColor = 'green';
@@ -60,8 +79,29 @@
             card.style.display = "block";
         }
 
-        function getRandomInt(max) {
-            return Math.floor(Math.random() * max);
+        function randomIntFromInterval(min, max) { // min and max included 
+            return Math.floor(Math.random() * (max - min + 1) + min)
+        }
+
+        function checkPeople() {
+            var toReturn = true;
+            if (random === -1) {
+                random = randomIntFromInterval(0, 9);
+                console.log("Random number: " + random);
+            }
+            if (currentPosition === arr.length) {
+                console.log("Restart current position");
+                currentPosition = 0;
+                random = -1;
+                return true;
+            }
+            if (arr[currentPosition] === random) {
+                console.log("To revition");
+                toReturn = false;
+            }
+            console.log("Current position: " + currentPosition);
+            currentPosition++;
+            return toReturn;
         }
 
         function startTrafficSignal() {
@@ -72,8 +112,11 @@
         }
 
         var timer = setInterval(function () {
-            startTrafficSignal();
-        }, 5000);
+            if (isBucle) {
+                buttonPushed();
+            }
+            setTimeout(() => { startTrafficSignal(); }, 3000);
+        }, 4000);
 
         startTrafficSignal();
     </script>
